@@ -271,33 +271,46 @@ $env:PYTHONPATH="backend"
 
 ---
 
-## 11. Deployment Guide
+## 11. Deployment Guide (Vercel-Only Full Stack)
 
-### Deploy Backend to Render
-1. Push this repository to GitHub.
-2. In [Render Dashboard](https://dashboard.render.com/), click **New +** > **Web Service**.
-3. Select your repository.
-4. Configure service settings:
-   - **Name**: `scalezix-content-brief-api`
-   - **Root Directory**: `backend`
-   - **Environment**: `Python 3`
-   - **Build Command**: `pip install -r requirements.txt`
-   - **Start Command**: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-5. Add Environment Variables:
-   - `GEMINI_API_KEY`: `<Your Google Gemini API Key>`
-   - `GEMINI_MODEL`: `gemini-3.5-flash`
-   - `ALLOWED_ORIGINS`: `https://your-frontend.vercel.app`
-6. Click **Create Web Service**. Note the deployed URL (e.g. `https://scalezix-content-brief-api.onrender.com`).
+This project is architected for **100% Vercel deployment** with zero external backend hosting (no Render, Railway, or Heroku required). Next.js and FastAPI run on the same Vercel deployment under unified same-origin routing.
 
-### Deploy Frontend to Vercel
-1. In [Vercel Dashboard](https://vercel.com/), click **Add New...** > **Project**.
-2. Import your GitHub repository.
-3. Configure project settings:
-   - **Framework Preset**: `Next.js`
-   - **Root Directory**: `frontend`
-4. Add Environment Variables:
-   - `NEXT_PUBLIC_BACKEND_URL`: `https://scalezix-content-brief-api.onrender.com` (your Render backend URL)
-5. Click **Deploy**.
+### Step 1: Push Code to GitHub
+Ensure all changes are pushed to your GitHub repository:
+```bash
+git add .
+git commit -m "feat: brand-consistent content brief generator with Vercel deployment"
+git push origin main
+```
+
+### Step 2: Import into Vercel
+1. Go to your [Vercel Dashboard](https://vercel.com/dashboard) and click **Add New...** > **Project**.
+2. Select and import your GitHub repository (`scalezix-content-brief`).
+3. Leave **Root Directory** as `./` (the repository root). The root `vercel.json` automatically orchestrates both the Next.js frontend (`frontend/`) and the FastAPI backend (`backend/`).
+
+### Step 3: Configure Environment Variables in Vercel
+Under the **Environment Variables** section in the Vercel project settings, add:
+
+| Key | Value | Description |
+| :--- | :--- | :--- |
+| `GEMINI_API_KEY` | `AIzaSy...` | Your Google Gemini API Key from Google AI Studio |
+| `GEMINI_MODEL` | `gemini-3.5-flash` | Active Google Gemini model |
+| `ALLOWED_ORIGINS` | `*` | Optional (same-origin requests bypass CORS natively) |
+
+> [!TIP]
+> You do **not** need to configure `NEXT_PUBLIC_BACKEND_URL` in production! The frontend uses relative paths (`/api/...`), and Vercel automatically proxies all `/api/*` traffic to the FastAPI backend.
+
+### Step 4: Deploy and Verify
+1. Click **Deploy**.
+2. Once the build finishes, your deployment will be live at `https://<your-project>.vercel.app`.
+3. Verify backend health:
+   ```bash
+   curl https://<your-project>.vercel.app/api/health
+   ```
+   Should return: `{"status": "healthy", "service": "Brand-Consistent Content Brief Generator", "version": "1.0.0", "gemini_model": "gemini-3.5-flash", "api_key_configured": true}`.
+4. Open `https://<your-project>.vercel.app` in your browser:
+   - Click **"Load Sample Brief"** to test instant rendering and export without burning API tokens.
+   - Run a live brief generation with your target keyword and brand rules to test full end-to-end AI synthesis.
 
 ---
 

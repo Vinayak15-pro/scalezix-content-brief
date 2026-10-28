@@ -16,7 +16,7 @@ from app.services.export_service import brief_to_markdown, brief_to_json_export
 from app.config import settings
 
 logger = logging.getLogger(__name__)
-router = APIRouter(prefix="/api/briefs", tags=["Content Briefs"])
+router = APIRouter(tags=["Content Briefs"])
 
 
 @router.post("/generate", response_model=ContentBrief)

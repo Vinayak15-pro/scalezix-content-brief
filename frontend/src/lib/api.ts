@@ -1,6 +1,11 @@
 import { BriefGenerationRequest, ContentBrief, BrandAuditResult } from "@/types/brief";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_BACKEND_URL !== undefined
+    ? process.env.NEXT_PUBLIC_BACKEND_URL
+    : process.env.NODE_ENV === "development"
+    ? "http://localhost:8000"
+    : "";
 
 export class ApiError extends Error {
   status: number;
@@ -32,7 +37,7 @@ export async function checkBackendHealth(): Promise<{
   api_key_configured: boolean;
 }> {
   try {
-    const res = await fetch(`${API_BASE_URL}/health`, {
+    const res = await fetch(`${API_BASE_URL}/api/health`, {
       method: "GET",
       cache: "no-store",
     });

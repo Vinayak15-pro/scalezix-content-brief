@@ -36,11 +36,13 @@ async def global_exception_handler(request: Request, exc: Exception):
         content={"detail": f"An unexpected error occurred: {str(exc)}"},
     )
 
-# Include routes
-app.include_router(briefs.router)
+# Include routes under both /api/briefs and /briefs for seamless proxy and Vercel routing
+app.include_router(briefs.router, prefix="/api/briefs")
+app.include_router(briefs.router, prefix="/briefs")
 
 
 @app.get("/health", tags=["Health"])
+@app.get("/api/health", tags=["Health"])
 async def health_check():
     """
     Health check endpoint returning service status, configured model,
